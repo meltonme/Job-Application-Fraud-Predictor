@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Posting Prediction</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="container">
+  <h1>Fake Job Posting Prediction</h1>
+  <div class="form-group">
+    <label for="description">Job Description:</label>
+    <textarea id="description" rows="4"></textarea>
+  </div>
+  <div class="form-group">
+    <label for="requirements">Job Requirements:</label>
+    <textarea id="requirements" rows="4"></textarea>
+  </div>
+  <button onclick="predictFakeJobPosting()">Get Prediction</button>
+  
+  <div id="result" class="result" style="display: none;"></div>
+</div>
+
+<script>
+  async function predictFakeJobPosting() {
+    const description = document.getElementById("description").value;
+    const requirements = document.getElementById("requirements").value;
+    
+    const response = await fetch("{{ url_for('predict') }}", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        description: description,
+        requirements: requirements
+      })
+    });
+    
+    const data = await response.json();
+    document.getElementById("result").style.display = "block";
+    document.getElementById("result").innerHTML = `
+      <p><strong>Prediction:</strong> ${data.prediction}</p>
+      <p><strong>Fraud Probability:</strong> ${data.fraud_probability.toFixed(2)}</p>
+    `;
+  }
+</script>
+
+</body>
+</html>
